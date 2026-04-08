@@ -11,6 +11,7 @@ import {
 } from "@/data/restaurants";
 import ResultCard from "@/components/ResultCard";
 import TeamModal from "@/components/TeamModal";
+import CherryBlossoms from "@/components/CherryBlossoms";
 
 type Step = "category" | "budget" | "loading" | "result";
 
@@ -95,7 +96,8 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-full px-5 py-10 sm:py-14 pb-28">
+    <div className="flex flex-col items-center min-h-full px-5 py-10 sm:py-14 pb-28 relative">
+      <CherryBlossoms />
       {/* Header */}
       <header className="text-center mb-10 sm:mb-12">
         <div className="text-6xl mb-3 animate-float">🍽️</div>

@@ -159,3 +159,61 @@ body {
 .doodle-border {
   border: 2.5px dashed var(--color-card-border);
 }
+
+/* ── Cherry blossom petals ── */
+@keyframes petal-fall {
+  0% {
+    transform: translateY(-30px) translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(25vh) translateX(var(--sway, 40px)) rotate(90deg);
+  }
+  50% {
+    transform: translateY(50vh) translateX(calc(var(--sway, 40px) * -0.5)) rotate(180deg);
+  }
+  75% {
+    transform: translateY(75vh) translateX(var(--sway, 40px)) rotate(270deg);
+  }
+  100% {
+    transform: translateY(105vh) translateX(0) rotate(360deg);
+  }
+}
+
+/* ── Badge shimmer ── */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes star-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes badge-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.badge-shimmer {
+  background: linear-gradient(
+    90deg,
+    #FF8C61 0%,
+    #FFD9B8 25%,
+    #FFAA80 50%,
+    #FFD9B8 75%,
+    #FF8C61 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.badge-star {
+  display: inline-block;
+  animation: star-spin 3s linear infinite;
+}
+
+.group:hover .badge-bounce {
+  animation: badge-bounce 0.4s ease-in-out;
+}

@@ -109,6 +109,16 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
         <div className="absolute top-3 right-4 text-2xl opacity-20 rotate-12">🌸</div>
         <div className="absolute bottom-4 left-4 text-xl opacity-15 -rotate-12">🍃</div>
 
+        {/* Badge */}
+        {restaurant.badge && (
+          <div className="text-center mb-2 badge-bounce">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 border border-amber-200 text-sm font-bold">
+              <span className="badge-shimmer">단풍 추천!</span>
+              <span className="badge-star text-base">⭐</span>
+            </span>
+          </div>
+        )}
+
         {/* Restaurant name */}
         <div className="text-center mb-2">
           <span className="text-4xl animate-jelly inline-block">🎉</span>
