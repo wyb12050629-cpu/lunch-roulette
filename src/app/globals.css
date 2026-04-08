@@ -26,7 +26,8 @@ body {
   font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Animations */
+/* ── Animations ── */
+
 @keyframes slide-up {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
@@ -39,8 +40,12 @@ body {
 }
 @keyframes wiggle {
   0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-6deg); }
-  75% { transform: rotate(6deg); }
+  15% { transform: rotate(-8deg); }
+  30% { transform: rotate(8deg); }
+  45% { transform: rotate(-6deg); }
+  60% { transform: rotate(6deg); }
+  75% { transform: rotate(-3deg); }
+  90% { transform: rotate(3deg); }
 }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
@@ -68,14 +73,73 @@ body {
   100% { transform: scale(1, 1); }
 }
 
+/* 1. Category button bounce */
+@keyframes btn-bounce-click {
+  0% { transform: scale(1); }
+  30% { transform: scale(0.88); }
+  50% { transform: scale(1.12); }
+  70% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+/* 2. Budget button wiggle on select */
+@keyframes wiggle-select {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  10% { transform: rotate(-5deg) scale(1.03); }
+  20% { transform: rotate(5deg) scale(1.03); }
+  30% { transform: rotate(-4deg) scale(1.02); }
+  40% { transform: rotate(4deg) scale(1.02); }
+  50% { transform: rotate(-2deg) scale(1.01); }
+  60% { transform: rotate(2deg) scale(1.01); }
+}
+
+/* 4. Spin for retry button */
+@keyframes spin-bounce {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(0.9); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* 5. Loading heartbeat */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.25); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.15); }
+  60% { transform: scale(1); }
+}
+@keyframes loading-dots {
+  0%, 20% { opacity: 0.2; }
+  50% { opacity: 1; }
+  80%, 100% { opacity: 0.2; }
+}
+@keyframes slot-spin {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-10px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(10px); }
+  100% { transform: translateY(0); }
+}
+
+/* 6. Vote heart burst particles */
+@keyframes particle-burst {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { opacity: 0; }
+}
+
 .animate-slide-up { animation: slide-up 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
 .animate-bounce-in { animation: bounce-in 0.55s cubic-bezier(0.22, 1, 0.36, 1); }
-.animate-wiggle { animation: wiggle 0.6s ease-in-out; }
+.animate-wiggle { animation: wiggle 0.7s ease-in-out; }
 .animate-float { animation: float 2.8s ease-in-out infinite; }
 .animate-pop { animation: pop 0.35s ease-out; }
 .animate-confetti { animation: confetti-fall 0.5s ease-out forwards; }
 .animate-fade-in { animation: fade-in 0.3s ease-out; }
 .animate-jelly { animation: jelly 0.5s ease-out; }
+.animate-btn-bounce { animation: btn-bounce-click 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.animate-wiggle-select { animation: wiggle-select 0.6s ease-in-out; }
+.animate-spin-bounce { animation: spin-bounce 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.animate-heartbeat { animation: heartbeat 1s ease-in-out infinite; }
+.animate-slot-spin { animation: slot-spin 0.3s ease-in-out infinite; }
 
 /* Button bounce on press */
 .btn-bouncy {

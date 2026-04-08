@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   restaurants,
   foodCategoryLabels,
@@ -12,9 +12,11 @@ import {
 import ResultCard from "@/components/ResultCard";
 import TeamModal from "@/components/TeamModal";
 
-type Step = "category" | "budget" | "result";
+type Step = "category" | "budget" | "loading" | "result";
 
 const categoryButtons: CategorySelection[] = ["korean", "chinese", "japanese", "western", "asian", "any"];
+
+const loadingEmojis = ["🍚", "🥟", "🍣", "🍝", "🍜", "🍛", "🍲", "🥘"];
 
 export default function Home() {
   const [step, setStep] = useState<Step>("category");
@@ -22,6 +24,9 @@ export default function Home() {
   const [selectedBudget, setSelectedBudget] = useState<BudgetTier | null>(null);
   const [picked, setPicked] = useState<Restaurant | null>(null);
   const [teamModalOpen, setTeamModalOpen] = useState(false);
+  const [bouncingCat, setBouncingCat] = useState<string | null>(null);
+  const [wigglingBudget, setWigglingBudget] = useState<string | null>(null);
+  const loadingEmojiIdx = useRef(0);
 
   const pickRandom = useCallback(
     (category: CategorySelection, budget: BudgetTier) => {
@@ -38,26 +43,48 @@ export default function Home() {
   );
 
   const handleCategorySelect = (cat: CategorySelection) => {
-    setSelectedCategory(cat);
-    setStep("budget");
+    setBouncingCat(cat);
+    setTimeout(() => {
+      setBouncingCat(null);
+      setSelectedCategory(cat);
+      setStep("budget");
+    }, 400);
   };
 
   const handleBudgetSelect = (budget: BudgetTier) => {
     if (!selectedCategory) return;
-    setSelectedBudget(budget);
-    const result = pickRandom(selectedCategory, budget);
-    if (result) {
-      setPicked(result);
-      setStep("result");
-    } else {
-      alert("😅 해당 조건의 식당이 아직 없어요! 다른 조건을 골라보세요~");
-    }
+    setWigglingBudget(budget);
+    setTimeout(() => {
+      setWigglingBudget(null);
+      setSelectedBudget(budget);
+
+      // Show loading
+      setStep("loading");
+      loadingEmojiIdx.current = 0;
+
+      setTimeout(() => {
+        const result = pickRandom(selectedCategory, budget);
+        if (result) {
+          setPicked(result);
+          setStep("result");
+        } else {
+          setStep("budget");
+          alert("😅 해당 조건의 식당이 아직 없어요! 다른 조건을 골라보세요~");
+        }
+      }, 1500);
+    }, 500);
   };
 
   const handleRetry = () => {
     if (!selectedCategory || !selectedBudget) return;
-    const result = pickRandom(selectedCategory, selectedBudget);
-    if (result) setPicked(result);
+    setStep("loading");
+    setTimeout(() => {
+      const result = pickRandom(selectedCategory, selectedBudget);
+      if (result) {
+        setPicked(result);
+        setStep("result");
+      }
+    }, 1500);
   };
 
   const handleReset = () => {
@@ -85,7 +112,7 @@ export default function Home() {
 
       <div className="w-full max-w-md">
         {/* Step indicator */}
-        {step !== "result" && (
+        {(step === "category" || step === "budget") && (
           <div className="flex items-center justify-center gap-3 mb-7 animate-fade-in">
             <span className={`h-3 rounded-full transition-all duration-300 ${step === "category" ? "bg-primary w-8" : "bg-card-border w-3"}`} />
             <span className={`h-3 rounded-full transition-all duration-300 ${step === "budget" ? "bg-primary w-8" : "bg-card-border w-3"}`} />
@@ -103,7 +130,9 @@ export default function Home() {
                 <button
                   key={cat}
                   onClick={() => handleCategorySelect(cat)}
-                  className="btn-bouncy flex flex-col items-center gap-2 p-6 rounded-[20px] bg-card border-2 border-card-border/60 hover:border-primary hover:shadow-lg hover:shadow-primary/10 cursor-pointer"
+                  className={`btn-bouncy flex flex-col items-center gap-2 p-6 rounded-[20px] bg-card border-2 border-card-border/60 hover:border-primary hover:shadow-lg hover:shadow-primary/10 cursor-pointer ${
+                    bouncingCat === cat ? "animate-btn-bounce" : ""
+                  }`}
                 >
                   <span className="text-4xl">{foodCategoryLabels[cat].split(" ")[0]}</span>
                   <span className="font-bold text-warm-text">{foodCategoryLabels[cat].split(" ")[1]}</span>
@@ -133,13 +162,40 @@ export default function Home() {
                 <button
                   key={opt.tier}
                   onClick={() => handleBudgetSelect(opt.tier)}
-                  className="btn-bouncy flex items-center gap-4 p-5 rounded-[20px] bg-card border-2 border-card-border/60 hover:border-primary hover:shadow-lg hover:shadow-primary/10 cursor-pointer"
+                  className={`btn-bouncy flex items-center gap-4 p-5 rounded-[20px] bg-card border-2 border-card-border/60 hover:border-primary hover:shadow-lg hover:shadow-primary/10 cursor-pointer ${
+                    wigglingBudget === opt.tier ? "animate-wiggle-select border-primary" : ""
+                  }`}
                 >
                   <span className="text-4xl">{opt.emoji}</span>
                   <p className="font-bold text-warm-text">{opt.label}</p>
                 </button>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Loading */}
+        {step === "loading" && (
+          <div className="animate-fade-in flex flex-col items-center gap-6 py-12">
+            <div className="flex gap-3">
+              {loadingEmojis.slice(0, 5).map((emoji, i) => (
+                <span
+                  key={i}
+                  className="text-4xl animate-slot-spin"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
+                  {emoji}
+                </span>
+              ))}
+            </div>
+            <div className="text-5xl animate-heartbeat">🎰</div>
+            <p className="text-warm-text font-bold text-lg">
+              두근두근
+              <span className="inline-block" style={{ animation: "loading-dots 1.2s infinite", animationDelay: "0s" }}>.</span>
+              <span className="inline-block" style={{ animation: "loading-dots 1.2s infinite", animationDelay: "0.2s" }}>.</span>
+              <span className="inline-block" style={{ animation: "loading-dots 1.2s infinite", animationDelay: "0.4s" }}>.</span>
+            </p>
+            <p className="text-warm-text/50 text-sm">맛있는 식당을 찾고 있어요!</p>
           </div>
         )}
 

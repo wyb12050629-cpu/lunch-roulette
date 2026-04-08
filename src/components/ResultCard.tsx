@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import type { Restaurant } from "@/data/restaurants";
 import { getVotes, vote } from "@/lib/supabase";
 
@@ -13,10 +13,24 @@ interface ResultCardProps {
 
 const confettiEmojis = ["🎊", "✨", "🎉", "🥳", "🎈"];
 
+interface Particle {
+  id: number;
+  emoji: string;
+  x: number;
+  y: number;
+}
+
+const upParticles = ["💖", "❤️", "🧡", "💛", "✨", "⭐"];
+const downParticles = ["💔", "😢", "🥲", "😅", "💧", "🫠"];
+
 export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: ResultCardProps) {
   const [votes, setVotes] = useState({ up_count: 0, down_count: 0 });
   const [voted, setVoted] = useState<"up" | "down" | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [retrySpinning, setRetrySpinning] = useState(false);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const particleId = useRef(0);
+  const voteAreaRef = useRef<HTMLDivElement>(null);
 
   if (!loaded) {
     getVotes(restaurant.id).then((v) => {
@@ -25,9 +39,26 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
     });
   }
 
+  const spawnParticles = useCallback((type: "up" | "down") => {
+    const emojis = type === "up" ? upParticles : downParticles;
+    const newParticles: Particle[] = Array.from({ length: 8 }, () => {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 40 + Math.random() * 50;
+      return {
+        id: ++particleId.current,
+        emoji: emojis[Math.floor(Math.random() * emojis.length)],
+        x: Math.cos(angle) * distance,
+        y: Math.sin(angle) * distance,
+      };
+    });
+    setParticles(newParticles);
+    setTimeout(() => setParticles([]), 700);
+  }, []);
+
   const handleVote = async (type: "up" | "down") => {
     if (voted) return;
     setVoted(type);
+    spawnParticles(type);
     const result = await vote(restaurant.id, type);
     if (result) {
       setVotes(result);
@@ -51,8 +82,14 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
     }
   };
 
+  const handleRetry = () => {
+    setRetrySpinning(true);
+    setTimeout(() => setRetrySpinning(false), 600);
+    onRetry();
+  };
+
   return (
-    <div className="animate-bounce-in">
+    <div className="animate-slide-up">
       {/* Confetti decoration */}
       <div className="flex justify-center gap-3 mb-2">
         {confettiEmojis.map((emoji, i) => (
@@ -67,8 +104,8 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
       </div>
 
       {/* Card */}
-      <div className="bg-card rounded-[24px] doodle-border p-7 sm:p-9 shadow-xl shadow-primary/8 relative overflow-hidden">
-        {/* Background decoration dots */}
+      <div className="bg-card rounded-[24px] doodle-border p-7 sm:p-9 shadow-xl shadow-primary/8 relative overflow-hidden animate-bounce-in">
+        {/* Background decoration */}
         <div className="absolute top-3 right-4 text-2xl opacity-20 rotate-12">🌸</div>
         <div className="absolute bottom-4 left-4 text-xl opacity-15 -rotate-12">🍃</div>
 
@@ -108,13 +145,31 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
         )}
 
         {/* Vote */}
-        <div className="flex items-center justify-center gap-4 mb-4">
+        <div ref={voteAreaRef} className="relative flex items-center justify-center gap-4 mb-4">
+          {/* Particles */}
+          {particles.map((p) => (
+            <span
+              key={p.id}
+              className="absolute text-lg pointer-events-none"
+              style={{
+                left: "50%",
+                top: "50%",
+                animation: "particle-burst 0.65s ease-out forwards",
+                transform: `translate(${p.x}px, ${p.y}px)`,
+                ["--tx" as string]: `${p.x}px`,
+                ["--ty" as string]: `${p.y}px`,
+              }}
+            >
+              {p.emoji}
+            </span>
+          ))}
+
           <button
             onClick={() => handleVote("up")}
             disabled={voted !== null}
-            className={`btn-bouncy flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold ${
+            className={`btn-bouncy flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold transition-all ${
               voted === "up"
-                ? "bg-blue-100 text-blue-600 scale-110"
+                ? "bg-blue-100 text-blue-600 scale-110 animate-jelly"
                 : voted
                   ? "bg-warm-bg text-warm-text/30 cursor-not-allowed"
                   : "bg-warm-bg text-warm-text cursor-pointer hover:bg-blue-50"
@@ -126,9 +181,9 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
           <button
             onClick={() => handleVote("down")}
             disabled={voted !== null}
-            className={`btn-bouncy flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold ${
+            className={`btn-bouncy flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold transition-all ${
               voted === "down"
-                ? "bg-red-100 text-red-600 scale-110"
+                ? "bg-red-100 text-red-600 scale-110 animate-jelly"
                 : voted
                   ? "bg-warm-bg text-warm-text/30 cursor-not-allowed"
                   : "bg-warm-bg text-warm-text cursor-pointer hover:bg-red-50"
@@ -158,8 +213,10 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
       {/* Action buttons */}
       <div className="flex gap-3 mt-5">
         <button
-          onClick={onRetry}
-          className="btn-bouncy flex-1 py-4 rounded-[16px] bg-primary text-white font-bold cursor-pointer text-base"
+          onClick={handleRetry}
+          className={`btn-bouncy flex-1 py-4 rounded-[16px] bg-primary text-white font-bold cursor-pointer text-base ${
+            retrySpinning ? "animate-spin-bounce" : ""
+          }`}
         >
           🎰 다시 뽑기
         </button>
