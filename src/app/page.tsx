@@ -107,7 +107,7 @@ export default function Home() {
         <p className="mt-2 text-sm sm:text-base text-warm-text/60 font-medium">
           점심 메뉴 고민 끝! 돌려돌려~ 🎰
         </p>
-        <p className="mt-1 text-sm sm:text-base text-warm-text/60 font-medium">
+        <p className="mt-1 text-xs text-warm-text/40 font-medium">
           🍁 단풍이가 뚝딱뚝딱 만들었어요
         </p>
       </header>
