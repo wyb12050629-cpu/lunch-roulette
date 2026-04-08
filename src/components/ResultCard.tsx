@@ -11,6 +11,8 @@ interface ResultCardProps {
   isTeam?: boolean;
 }
 
+const confettiEmojis = ["🎊", "✨", "🎉", "🥳", "🎈"];
+
 export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: ResultCardProps) {
   const [votes, setVotes] = useState({ up_count: 0, down_count: 0 });
   const [voted, setVoted] = useState<"up" | "down" | null>(null);
@@ -51,21 +53,38 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
 
   return (
     <div className="animate-bounce-in">
+      {/* Confetti decoration */}
+      <div className="flex justify-center gap-3 mb-2">
+        {confettiEmojis.map((emoji, i) => (
+          <span
+            key={i}
+            className="text-2xl animate-confetti"
+            style={{ animationDelay: `${i * 0.08}s` }}
+          >
+            {emoji}
+          </span>
+        ))}
+      </div>
+
       {/* Card */}
-      <div className="bg-white rounded-3xl border-2 border-orange-200 p-6 sm:p-8 shadow-lg shadow-orange-100/50">
+      <div className="bg-card rounded-[24px] doodle-border p-7 sm:p-9 shadow-xl shadow-primary/8 relative overflow-hidden">
+        {/* Background decoration dots */}
+        <div className="absolute top-3 right-4 text-2xl opacity-20 rotate-12">🌸</div>
+        <div className="absolute bottom-4 left-4 text-xl opacity-15 -rotate-12">🍃</div>
+
         {/* Restaurant name */}
-        <div className="text-center mb-1">
-          <span className="text-3xl">🎉</span>
+        <div className="text-center mb-2">
+          <span className="text-4xl animate-jelly inline-block">🎉</span>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-center mb-2">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-center mb-3 text-warm-text">
           {restaurant.name}
         </h2>
 
         {/* Menu */}
-        <div className="bg-orange-50 rounded-2xl p-4 mb-5">
+        <div className="bg-warm-bg rounded-[16px] p-4 mb-6 border border-card-border/40">
           <div className="flex items-start gap-2">
-            <span className="shrink-0 text-lg">🍴</span>
-            <span className="text-zinc-700 font-medium">{restaurant.menu}</span>
+            <span className="shrink-0 text-xl">🍴</span>
+            <span className="text-warm-text font-semibold">{restaurant.menu}</span>
           </div>
         </div>
 
@@ -75,7 +94,7 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
             href={restaurant.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-naver text-white font-bold hover:brightness-110 transition mb-3"
+            className="btn-bouncy flex items-center justify-center gap-2 w-full py-3.5 rounded-[16px] bg-naver text-white font-bold mb-3"
           >
             <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
               <path d="M13.5 10.5L6.2 0H0v20h6.5V9.5L13.8 20H20V0h-6.5z" />
@@ -83,39 +102,39 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
             네이버 지도에서 보기
           </a>
         ) : (
-          <div className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-zinc-100 text-zinc-400 font-medium mb-3">
+          <div className="flex items-center justify-center gap-2 w-full py-3.5 rounded-[16px] bg-warm-bg text-warm-text/40 font-medium mb-3 border border-card-border/30">
             🗺️ 지도 링크 준비중
           </div>
         )}
 
         {/* Vote */}
-        <div className="flex items-center justify-center gap-4 mb-3">
+        <div className="flex items-center justify-center gap-4 mb-4">
           <button
             onClick={() => handleVote("up")}
             disabled={voted !== null}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold transition-all ${
+            className={`btn-bouncy flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold ${
               voted === "up"
                 ? "bg-blue-100 text-blue-600 scale-110"
                 : voted
-                  ? "bg-zinc-50 text-zinc-300 cursor-not-allowed"
-                  : "bg-zinc-100 hover:bg-blue-50 text-zinc-700 cursor-pointer active:scale-95"
+                  ? "bg-warm-bg text-warm-text/30 cursor-not-allowed"
+                  : "bg-warm-bg text-warm-text cursor-pointer hover:bg-blue-50"
             }`}
           >
-            <span className="text-xl">👍</span>
+            <span className="text-2xl">👍</span>
             <span>{votes.up_count}</span>
           </button>
           <button
             onClick={() => handleVote("down")}
             disabled={voted !== null}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold transition-all ${
+            className={`btn-bouncy flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold ${
               voted === "down"
                 ? "bg-red-100 text-red-600 scale-110"
                 : voted
-                  ? "bg-zinc-50 text-zinc-300 cursor-not-allowed"
-                  : "bg-zinc-100 hover:bg-red-50 text-zinc-700 cursor-pointer active:scale-95"
+                  ? "bg-warm-bg text-warm-text/30 cursor-not-allowed"
+                  : "bg-warm-bg text-warm-text cursor-pointer hover:bg-red-50"
             }`}
           >
-            <span className="text-xl">👎</span>
+            <span className="text-2xl">👎</span>
             <span>{votes.down_count}</span>
           </button>
         </div>
@@ -123,7 +142,7 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
         {/* Share */}
         <button
           onClick={handleShare}
-          className="w-full py-3 rounded-2xl bg-kakao text-[#3C1E1E] font-bold hover:brightness-95 transition flex items-center justify-center gap-2 cursor-pointer"
+          className="btn-bouncy w-full py-3.5 rounded-[16px] bg-kakao text-[#3C1E1E] font-bold flex items-center justify-center gap-2 cursor-pointer"
         >
           💬 카카오톡 공유하기
         </button>
@@ -131,22 +150,22 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
 
       {/* Team lunch encouragement */}
       {isTeam && (
-        <p className="text-center mt-3 text-sm text-orange-400 font-semibold animate-wiggle">
+        <p className="text-center mt-4 text-sm text-primary font-bold animate-wiggle">
           💪 막내 화이팅! 예약 전화는 네가 하는 거야~
         </p>
       )}
 
       {/* Action buttons */}
-      <div className="flex gap-3 mt-4">
+      <div className="flex gap-3 mt-5">
         <button
           onClick={onRetry}
-          className="flex-1 py-3.5 rounded-2xl bg-primary text-white font-bold hover:bg-primary-hover transition cursor-pointer active:scale-95"
+          className="btn-bouncy flex-1 py-4 rounded-[16px] bg-primary text-white font-bold cursor-pointer text-base"
         >
           🎰 다시 뽑기
         </button>
         <button
           onClick={onBack}
-          className="flex-1 py-3.5 rounded-2xl border-2 border-zinc-200 bg-white text-zinc-600 font-bold hover:bg-zinc-50 transition cursor-pointer active:scale-95"
+          className="btn-bouncy flex-1 py-4 rounded-[16px] bg-card border-2 border-card-border text-warm-text font-bold cursor-pointer text-base"
         >
           ← 처음으로
         </button>

@@ -32,31 +32,31 @@ export default function TeamModal({ open, onClose }: TeamModalProps) {
       onClick={handleClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
 
       {/* Modal */}
       <div
-        className="relative bg-[#FFF8F0] rounded-3xl w-full max-w-md max-h-[85vh] overflow-y-auto p-6 animate-slide-up"
+        className="relative bg-[#FFF8F0] rounded-[24px] w-full max-w-md max-h-[85vh] overflow-y-auto p-7 animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-500 hover:bg-zinc-200 transition cursor-pointer"
+          className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-warm-bg text-warm-text/50 hover:bg-card-border/40 transition cursor-pointer font-bold"
         >
           ✕
         </button>
 
-        <div className="text-center mb-6">
-          <span className="text-4xl">🏢</span>
-          <h2 className="text-xl font-extrabold mt-2">팀점심 / 회식</h2>
-          <p className="text-sm text-zinc-500 mt-1">단체로 가기 좋은 식당을 뽑아드려요!</p>
+        <div className="text-center mb-7">
+          <span className="text-5xl">🏢</span>
+          <h2 className="text-xl font-extrabold mt-3 text-warm-text">팀점심 / 회식</h2>
+          <p className="text-sm text-warm-text/50 mt-1">단체로 가기 좋은 식당을 뽑아드려요!</p>
         </div>
 
         {!picked ? (
           <button
             onClick={pickRandom}
-            className="w-full py-4 rounded-2xl bg-primary text-white font-bold text-lg hover:bg-primary-hover transition cursor-pointer active:scale-95"
+            className="btn-bouncy w-full py-4 rounded-[16px] bg-primary text-white font-bold text-lg cursor-pointer"
           >
             🎰 식당 뽑기!
           </button>

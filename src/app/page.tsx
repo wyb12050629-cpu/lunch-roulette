@@ -68,17 +68,17 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-full px-4 py-8 sm:py-12 pb-24">
+    <div className="flex flex-col items-center min-h-full px-5 py-10 sm:py-14 pb-28">
       {/* Header */}
-      <header className="text-center mb-8 sm:mb-10">
-        <div className="text-5xl mb-2 animate-float">🍽️</div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+      <header className="text-center mb-10 sm:mb-12">
+        <div className="text-6xl mb-3 animate-float">🍽️</div>
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-warm-text">
           오늘 뭐 먹지?
         </h1>
-        <p className="mt-2 text-sm sm:text-base text-zinc-400 font-medium">
+        <p className="mt-2 text-sm sm:text-base text-warm-text/60 font-medium">
           점심 메뉴 고민 끝! 돌려돌려~ 🎰
         </p>
-        <p className="mt-1 text-sm sm:text-base text-zinc-400 font-medium">
+        <p className="mt-1 text-sm sm:text-base text-warm-text/60 font-medium">
           🍁 단풍이가 뚝딱뚝딱 만들었어요
         </p>
       </header>
@@ -86,27 +86,27 @@ export default function Home() {
       <div className="w-full max-w-md">
         {/* Step indicator */}
         {step !== "result" && (
-          <div className="flex items-center justify-center gap-2 mb-6 animate-fade-in">
-            <span className={`w-2.5 h-2.5 rounded-full transition-all ${step === "category" ? "bg-primary w-6" : "bg-zinc-200"}`} />
-            <span className={`w-2.5 h-2.5 rounded-full transition-all ${step === "budget" ? "bg-primary w-6" : "bg-zinc-200"}`} />
+          <div className="flex items-center justify-center gap-3 mb-7 animate-fade-in">
+            <span className={`h-3 rounded-full transition-all duration-300 ${step === "category" ? "bg-primary w-8" : "bg-card-border w-3"}`} />
+            <span className={`h-3 rounded-full transition-all duration-300 ${step === "budget" ? "bg-primary w-8" : "bg-card-border w-3"}`} />
           </div>
         )}
 
         {/* Step 1: Category */}
         {step === "category" && (
           <div className="animate-slide-up">
-            <p className="text-center text-lg font-bold mb-5">
+            <p className="text-center text-lg font-bold mb-6 text-warm-text">
               오늘 뭐 땡겨요? 🤔
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               {categoryButtons.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => handleCategorySelect(cat)}
-                  className="flex flex-col items-center gap-1.5 p-5 rounded-2xl border-2 border-zinc-200 bg-white hover:border-primary hover:shadow-md hover:shadow-orange-100 transition-all active:scale-95 cursor-pointer"
+                  className="btn-bouncy flex flex-col items-center gap-2 p-6 rounded-[20px] bg-card border-2 border-card-border/60 hover:border-primary hover:shadow-lg hover:shadow-primary/10 cursor-pointer"
                 >
-                  <span className="text-3xl">{foodCategoryLabels[cat].split(" ")[0]}</span>
-                  <span className="font-bold text-zinc-800">{foodCategoryLabels[cat].split(" ")[1]}</span>
+                  <span className="text-4xl">{foodCategoryLabels[cat].split(" ")[0]}</span>
+                  <span className="font-bold text-warm-text">{foodCategoryLabels[cat].split(" ")[1]}</span>
                 </button>
               ))}
             </div>
@@ -118,25 +118,25 @@ export default function Home() {
           <div className="animate-slide-up">
             <button
               onClick={() => setStep("category")}
-              className="text-sm text-zinc-400 hover:text-zinc-600 transition mb-4 cursor-pointer"
+              className="text-sm text-warm-text/50 hover:text-warm-text transition mb-5 cursor-pointer font-medium"
             >
               ← 다시 고르기
             </button>
-            <p className="text-center text-lg font-bold mb-2">
+            <p className="text-center text-lg font-bold mb-2 text-warm-text">
               예산이 어떻게 되세요? 💸
             </p>
-            <p className="text-center text-xs text-zinc-400 mb-5">
+            <p className="text-center text-xs text-warm-text/50 mb-6">
               {foodCategoryLabels[selectedCategory!]} 선택 완료!
             </p>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {budgetOptions.map((opt) => (
                 <button
                   key={opt.tier}
                   onClick={() => handleBudgetSelect(opt.tier)}
-                  className="flex items-center gap-4 p-5 rounded-2xl border-2 border-zinc-200 bg-white hover:border-primary hover:shadow-md hover:shadow-orange-100 transition-all active:scale-95 cursor-pointer"
+                  className="btn-bouncy flex items-center gap-4 p-5 rounded-[20px] bg-card border-2 border-card-border/60 hover:border-primary hover:shadow-lg hover:shadow-primary/10 cursor-pointer"
                 >
-                  <span className="text-3xl">{opt.emoji}</span>
-                  <p className="font-bold text-zinc-800">{opt.label}</p>
+                  <span className="text-4xl">{opt.emoji}</span>
+                  <p className="font-bold text-warm-text">{opt.label}</p>
                 </button>
               ))}
             </div>
@@ -156,7 +156,7 @@ export default function Home() {
       {/* Floating Team Button */}
       <button
         onClick={() => setTeamModalOpen(true)}
-        className="fixed bottom-6 right-6 px-5 py-3.5 rounded-full bg-white border-2 border-orange-200 shadow-lg shadow-orange-100/50 font-bold text-sm hover:scale-105 hover:shadow-xl transition-all cursor-pointer active:scale-95 z-40"
+        className="btn-bouncy fixed bottom-6 right-6 px-5 py-4 rounded-full bg-card border-2 border-card-border shadow-lg shadow-primary/10 font-bold text-sm cursor-pointer z-40 text-warm-text"
       >
         🏢 팀점/회식이세요?
       </button>
@@ -165,7 +165,7 @@ export default function Home() {
       <TeamModal open={teamModalOpen} onClose={() => setTeamModalOpen(false)} />
 
       {/* Footer */}
-      <footer className="mt-auto pt-8 text-center text-xs text-zinc-300">
+      <footer className="mt-auto pt-10 text-center text-xs text-warm-text/30 font-medium">
         🍽️ 종각역 점심 룰렛 v2.0
       </footer>
     </div>
