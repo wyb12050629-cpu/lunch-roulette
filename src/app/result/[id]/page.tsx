@@ -1,11 +1,15 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect, useRef, useCallback } from "react";
 import { restaurants } from "@/data/restaurants";
-import { getVotes, vote } from "@/lib/supabase";
+import { getVotes, vote, subscribeVotes, supabase } from "@/lib/supabase";
 import CherryBlossoms from "@/components/CherryBlossoms";
 
 const confettiEmojis = ["🎊", "✨", "🎉", "🥳", "🎈"];
+const upParticles = ["💖", "❤️", "🧡", "💛", "✨", "⭐"];
+const downParticles = ["💔", "😢", "🥲", "😅", "💧", "🫠"];
+
+interface Particle { id: number; emoji: string; x: number; y: number; }
 
 export default function ResultPage({
   params,
@@ -17,14 +21,36 @@ export default function ResultPage({
 
   const [votes, setVotes] = useState({ up_count: 0, down_count: 0 });
   const [voted, setVoted] = useState<"up" | "down" | null>(null);
-  const [loaded, setLoaded] = useState(false);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const particleId = useRef(0);
 
-  if (restaurant && !loaded) {
-    getVotes(restaurant.id).then((v) => {
-      setVotes(v);
-      setLoaded(true);
+  useEffect(() => {
+    if (!restaurant) return;
+    getVotes(restaurant.id).then(setVotes);
+
+    const channel = subscribeVotes(restaurant.id, setVotes);
+    return () => {
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [restaurant?.id]);
+
+  const spawnParticles = useCallback((type: "up" | "down") => {
+    const emojis = type === "up" ? upParticles : downParticles;
+    const newParticles: Particle[] = Array.from({ length: 8 }, () => {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 40 + Math.random() * 50;
+      return {
+        id: ++particleId.current,
+        emoji: emojis[Math.floor(Math.random() * emojis.length)],
+        x: Math.cos(angle) * distance,
+        y: Math.sin(angle) * distance,
+      };
     });
-  }
+    setParticles(newParticles);
+    setTimeout(() => setParticles([]), 700);
+  }, []);
 
   if (!restaurant) {
     return (
@@ -44,14 +70,17 @@ export default function ResultPage({
   const handleVote = async (type: "up" | "down") => {
     if (voted) return;
     setVoted(type);
+    spawnParticles(type);
+
+    // Optimistic update
+    setVotes((prev) => ({
+      up_count: type === "up" ? prev.up_count + 1 : prev.up_count,
+      down_count: type === "down" ? prev.down_count + 1 : prev.down_count,
+    }));
+
     const result = await vote(restaurant.id, type);
     if (result) {
       setVotes(result);
-    } else {
-      setVotes((prev) => ({
-        up_count: type === "up" ? prev.up_count + 1 : prev.up_count,
-        down_count: type === "down" ? prev.down_count + 1 : prev.down_count,
-      }));
     }
   };
 
@@ -130,13 +159,28 @@ export default function ResultPage({
           )}
 
           {/* Vote */}
-          <div className="flex items-center justify-center gap-4 mb-3">
+          <div className="relative flex items-center justify-center gap-4 mb-3">
+            {particles.map((p) => (
+              <span
+                key={p.id}
+                className="absolute text-lg pointer-events-none"
+                style={{
+                  left: "50%",
+                  top: "50%",
+                  animation: "particle-burst 0.65s ease-out forwards",
+                  transform: `translate(${p.x}px, ${p.y}px)`,
+                }}
+              >
+                {p.emoji}
+              </span>
+            ))}
+
             <button
               onClick={() => handleVote("up")}
               disabled={voted !== null}
-              className={`btn-bouncy flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold ${
+              className={`btn-bouncy flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold transition-all ${
                 voted === "up"
-                  ? "bg-blue-100 text-blue-600 scale-110"
+                  ? "bg-blue-100 text-blue-600 scale-110 animate-jelly"
                   : voted
                     ? "bg-warm-bg text-warm-text/30 cursor-not-allowed"
                     : "bg-warm-bg text-warm-text cursor-pointer hover:bg-blue-50"
@@ -148,9 +192,9 @@ export default function ResultPage({
             <button
               onClick={() => handleVote("down")}
               disabled={voted !== null}
-              className={`btn-bouncy flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold ${
+              className={`btn-bouncy flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold transition-all ${
                 voted === "down"
-                  ? "bg-red-100 text-red-600 scale-110"
+                  ? "bg-red-100 text-red-600 scale-110 animate-jelly"
                   : voted
                     ? "bg-warm-bg text-warm-text/30 cursor-not-allowed"
                     : "bg-warm-bg text-warm-text cursor-pointer hover:bg-red-50"

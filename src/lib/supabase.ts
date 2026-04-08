@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient, RealtimeChannel } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -8,6 +8,8 @@ let supabase: SupabaseClient | null = null;
 if (supabaseUrl && supabaseAnonKey) {
   supabase = createClient(supabaseUrl, supabaseAnonKey);
 }
+
+export { supabase };
 
 export async function getVotes(restaurantId: string) {
   if (!supabase) return { up_count: 0, down_count: 0 };
@@ -52,4 +54,32 @@ export async function vote(restaurantId: string, type: "up" | "down") {
       .single();
     return data;
   }
+}
+
+export function subscribeVotes(
+  restaurantId: string,
+  onUpdate: (votes: { up_count: number; down_count: number }) => void
+): RealtimeChannel | null {
+  if (!supabase) return null;
+
+  const channel = supabase
+    .channel(`votes:${restaurantId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "votes",
+        filter: `restaurant_id=eq.${restaurantId}`,
+      },
+      (payload) => {
+        const row = payload.new as { up_count: number; down_count: number } | undefined;
+        if (row) {
+          onUpdate({ up_count: row.up_count, down_count: row.down_count });
+        }
+      }
+    )
+    .subscribe();
+
+  return channel;
 }

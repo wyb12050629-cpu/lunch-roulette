@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import type { Restaurant } from "@/data/restaurants";
-import { getVotes, vote } from "@/lib/supabase";
+import { getVotes, vote, subscribeVotes, supabase } from "@/lib/supabase";
 
 interface ResultCardProps {
   restaurant: Restaurant;
@@ -26,18 +26,22 @@ const downParticles = ["💔", "😢", "🥲", "😅", "💧", "🫠"];
 export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: ResultCardProps) {
   const [votes, setVotes] = useState({ up_count: 0, down_count: 0 });
   const [voted, setVoted] = useState<"up" | "down" | null>(null);
-  const [loaded, setLoaded] = useState(false);
   const [retrySpinning, setRetrySpinning] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
   const particleId = useRef(0);
   const voteAreaRef = useRef<HTMLDivElement>(null);
 
-  if (!loaded) {
-    getVotes(restaurant.id).then((v) => {
-      setVotes(v);
-      setLoaded(true);
-    });
-  }
+  // Load initial votes + subscribe to realtime
+  useEffect(() => {
+    getVotes(restaurant.id).then(setVotes);
+
+    const channel = subscribeVotes(restaurant.id, setVotes);
+    return () => {
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [restaurant.id]);
 
   const spawnParticles = useCallback((type: "up" | "down") => {
     const emojis = type === "up" ? upParticles : downParticles;
@@ -59,14 +63,16 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
     if (voted) return;
     setVoted(type);
     spawnParticles(type);
+
+    // Optimistic update
+    setVotes((prev) => ({
+      up_count: type === "up" ? prev.up_count + 1 : prev.up_count,
+      down_count: type === "down" ? prev.down_count + 1 : prev.down_count,
+    }));
+
     const result = await vote(restaurant.id, type);
     if (result) {
       setVotes(result);
-    } else {
-      setVotes((prev) => ({
-        up_count: type === "up" ? prev.up_count + 1 : prev.up_count,
-        down_count: type === "down" ? prev.down_count + 1 : prev.down_count,
-      }));
     }
   };
 
