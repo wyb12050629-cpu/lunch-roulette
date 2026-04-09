@@ -127,18 +127,24 @@ export default function Home() {
               오늘 뭐 땡겨요? 🤔
             </p>
             <div className="grid grid-cols-2 gap-4">
-              {categoryButtons.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => handleCategorySelect(cat)}
-                  className={`btn-bouncy flex flex-col items-center gap-2 p-6 rounded-[20px] bg-card border-2 border-card-border/60 hover:border-primary hover:shadow-lg hover:shadow-primary/10 cursor-pointer ${
-                    bouncingCat === cat ? "animate-btn-bounce" : ""
-                  }`}
-                >
-                  <span className="text-4xl">{foodCategoryLabels[cat].split(" ")[0]}</span>
-                  <span className="font-bold text-warm-text">{foodCategoryLabels[cat].split(" ")[1]}</span>
-                </button>
-              ))}
+              {categoryButtons.map((cat) => {
+                const label = foodCategoryLabels[cat];
+                const spaceIdx = label.indexOf(" ");
+                const emoji = label.slice(0, spaceIdx);
+                const text = label.slice(spaceIdx + 1);
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => handleCategorySelect(cat)}
+                    className={`btn-bouncy flex flex-col items-center gap-2 p-6 rounded-[20px] bg-card border-2 border-card-border/60 hover:border-primary hover:shadow-lg hover:shadow-primary/10 cursor-pointer ${
+                      cat === "any" ? "col-span-2" : ""
+                    } ${bouncingCat === cat ? "animate-btn-bounce" : ""}`}
+                  >
+                    <span className="text-4xl">{emoji}</span>
+                    <span className="font-bold text-warm-text">{text}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

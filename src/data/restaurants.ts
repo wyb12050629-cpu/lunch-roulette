@@ -30,7 +30,7 @@ export const foodCategoryLabels: Record<CategorySelection, string> = {
   western: "🍝 양식",
   asian: "🍜 아시안",
   cafe: "☕ 카페/베이커리",
-  any: "🎲 아무거나",
+  any: "🎲 아무거나 좋아요",
 };
 
 export const budgetOptions: { tier: BudgetTier; label: string; emoji: string }[] = [
