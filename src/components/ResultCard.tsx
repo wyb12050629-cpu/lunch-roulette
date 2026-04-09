@@ -205,20 +205,28 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
           </div>
         )}
 
-        {/* Naver Link */}
-        {restaurant.url && (
-          <a
-            href={restaurant.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-bouncy flex items-center justify-center gap-2 w-full py-3.5 rounded-[16px] bg-naver text-white font-bold mb-3"
+        {/* Naver + Share */}
+        <div className="flex gap-3 mb-4">
+          {restaurant.url && (
+            <a
+              href={restaurant.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-bouncy flex-1 flex items-center justify-center gap-2 py-3.5 rounded-[16px] bg-naver text-white font-bold"
+            >
+              📍 네이버 지도
+            </a>
+          )}
+          <button
+            onClick={handleShare}
+            className="btn-bouncy flex-1 py-3.5 rounded-[16px] bg-kakao text-[#3C1E1E] font-bold flex items-center justify-center gap-2 cursor-pointer"
           >
-            📍 네이버 지도
-          </a>
-        )}
+            💬 카카오톡 공유
+          </button>
+        </div>
 
         {/* Vote */}
-        <div ref={voteAreaRef} className="relative flex items-center justify-center gap-4 mb-4">
+        <div ref={voteAreaRef} className="relative flex items-center justify-center gap-4">
           {/* Particles */}
           {particles.map((p) => (
             <span
@@ -266,14 +274,6 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
             <span>{votes.down_count}</span>
           </button>
         </div>
-
-        {/* Share */}
-        <button
-          onClick={handleShare}
-          className="btn-bouncy w-full py-3.5 rounded-[16px] bg-kakao text-[#3C1E1E] font-bold flex items-center justify-center gap-2 cursor-pointer"
-        >
-          💬 카카오톡 공유하기
-        </button>
       </div>
 
       {/* Team lunch encouragement */}
