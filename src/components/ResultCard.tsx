@@ -206,22 +206,15 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
         )}
 
         {/* Naver Link */}
-        {restaurant.url ? (
+        {restaurant.url && (
           <a
             href={restaurant.url}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-bouncy flex items-center justify-center gap-2 w-full py-3.5 rounded-[16px] bg-naver text-white font-bold mb-3"
           >
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M13.5 10.5L6.2 0H0v20h6.5V9.5L13.8 20H20V0h-6.5z" />
-            </svg>
-            네이버 지도에서 보기
+            📍 네이버 지도
           </a>
-        ) : (
-          <div className="flex items-center justify-center gap-2 w-full py-3.5 rounded-[16px] bg-warm-bg text-warm-text/40 font-medium mb-3 border border-card-border/30">
-            🗺️ 지도 링크 준비중
-          </div>
         )}
 
         {/* Vote */}
