@@ -15,7 +15,7 @@ import CherryBlossoms from "@/components/CherryBlossoms";
 
 type Step = "category" | "budget" | "loading" | "result";
 
-const categoryButtons: CategorySelection[] = ["korean", "chinese", "japanese", "western", "asian", "any"];
+const categoryButtons: CategorySelection[] = ["korean", "chinese", "japanese", "western", "asian", "cafe", "any"];
 
 const loadingEmojis = ["🍚", "🥟", "🍣", "🍝", "🍜", "🍛", "🍲", "🥘"];
 
@@ -33,7 +33,6 @@ export default function Home() {
     (category: CategorySelection, budget: BudgetTier) => {
       const filtered = restaurants.filter(
         (r) =>
-          r.category !== "team" &&
           r.budget === budget &&
           (category === "any" || r.category === category)
       );
@@ -204,6 +203,7 @@ export default function Home() {
         {/* Step 3: Result */}
         {step === "result" && picked && (
           <ResultCard
+            key={picked.id}
             restaurant={picked}
             onRetry={handleRetry}
             onBack={handleReset}

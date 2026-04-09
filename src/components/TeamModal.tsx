@@ -12,7 +12,12 @@ interface TeamModalProps {
 export default function TeamModal({ open, onClose }: TeamModalProps) {
   const [picked, setPicked] = useState<Restaurant | null>(null);
 
-  const teamRestaurants = restaurants.filter((r) => r.category === "team");
+  const teamKeywords = ["팀점", "팀회식", "회식", "단체", "룸"];
+  const teamRestaurants = restaurants.filter(
+    (r) =>
+      (r.budget === "mid" || r.budget === "expensive") &&
+      r.tags?.some((t) => teamKeywords.some((k) => t.includes(k)))
+  );
 
   const pickRandom = () => {
     const pick = teamRestaurants[Math.floor(Math.random() * teamRestaurants.length)];
@@ -62,6 +67,7 @@ export default function TeamModal({ open, onClose }: TeamModalProps) {
           </button>
         ) : (
           <ResultCard
+            key={picked.id}
             restaurant={picked}
             onRetry={pickRandom}
             onBack={() => setPicked(null)}

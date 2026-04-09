@@ -28,6 +28,7 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
   const [voted, setVoted] = useState<"up" | "down" | null>(null);
   const [retrySpinning, setRetrySpinning] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
   const particleId = useRef(0);
   const voteAreaRef = useRef<HTMLDivElement>(null);
 
@@ -115,13 +116,21 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
         <div className="absolute top-3 right-4 text-2xl opacity-20 rotate-12">🌸</div>
         <div className="absolute bottom-4 left-4 text-xl opacity-15 -rotate-12">🍃</div>
 
-        {/* Badge */}
-        {restaurant.badge && (
-          <div className="text-center mb-2 badge-bounce">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 border border-amber-200 text-sm font-bold">
-              <span className="badge-shimmer">단풍 추천!</span>
-              <span className="badge-star text-base">⭐</span>
-            </span>
+        {/* Badges */}
+        {(restaurant.badge || restaurant.recommended) && (
+          <div className="text-center mb-2 flex items-center justify-center gap-2 flex-wrap badge-bounce">
+            {restaurant.badge && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 border border-amber-200 text-sm font-bold">
+                <span className="badge-shimmer">단풍 추천!</span>
+                <span className="badge-star text-base">⭐</span>
+              </span>
+            )}
+            {restaurant.recommended && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-100 to-orange-100 border border-yellow-300 text-sm font-bold">
+                <span>🏆</span>
+                <span>인기 맛집</span>
+              </span>
+            )}
           </div>
         )}
 
@@ -133,13 +142,68 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
           {restaurant.name}
         </h2>
 
+        {/* Seoul Pay badge */}
+        {restaurant.seoulPay && (
+          <div className="flex justify-center mb-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
+              💙 서울페이 가능
+            </span>
+          </div>
+        )}
+
         {/* Menu */}
-        <div className="bg-warm-bg rounded-[16px] p-4 mb-6 border border-card-border/40">
+        <div className="bg-warm-bg rounded-[16px] p-4 mb-5 border border-card-border/40">
           <div className="flex items-start gap-2">
             <span className="shrink-0 text-xl">🍴</span>
-            <span className="text-warm-text font-semibold">{restaurant.menu}</span>
+            <div className="flex-1 min-w-0">
+              <div className="text-warm-text font-semibold">{restaurant.menu}</div>
+              {restaurant.price && (
+                <div className="text-warm-text/60 text-sm font-medium mt-0.5">{restaurant.price}</div>
+              )}
+            </div>
           </div>
+
+          {/* Menu toggle */}
+          {restaurant.menus && restaurant.menus.length > 0 && (
+            <>
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                className="mt-3 w-full flex items-center justify-center gap-1.5 py-2 text-sm font-bold text-warm-text/70 hover:text-warm-text transition cursor-pointer border-t border-card-border/30 pt-3"
+              >
+                <span>🍽 메뉴 {menuOpen ? "접기" : "보기"}</span>
+                <span
+                  className={`transition-transform duration-200 inline-block ${menuOpen ? "rotate-180" : ""}`}
+                >
+                  ▼
+                </span>
+              </button>
+              {menuOpen && (
+                <div className="mt-2 pt-2 border-t border-card-border/20 space-y-1.5 animate-fade-in">
+                  {restaurant.menus.map((m, i) => (
+                    <div key={i} className="flex items-baseline justify-between gap-3 text-sm">
+                      <span className="text-warm-text truncate">{m.name}</span>
+                      <span className="text-warm-text/60 font-semibold shrink-0">{m.price}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
+
+        {/* Tags */}
+        {restaurant.tags && restaurant.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-5">
+            {restaurant.tags.map((tag, i) => (
+              <span
+                key={i}
+                className="inline-block px-2.5 py-1 rounded-full bg-orange-50 border border-orange-100 text-xs font-medium text-orange-700"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Naver Link */}
         {restaurant.url ? (
