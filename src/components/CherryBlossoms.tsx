@@ -45,7 +45,7 @@ export default function CherryBlossoms() {
             ["--sway" as string]: `${p.swayAmount}px`,
           }}
         >
-          🌸
+          🍃
         </span>
       ))}
     </div>

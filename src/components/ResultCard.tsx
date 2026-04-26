@@ -113,7 +113,7 @@ export default function ResultCard({ restaurant, onRetry, onBack, isTeam }: Resu
       {/* Card */}
       <div className="bg-card rounded-[24px] doodle-border p-7 sm:p-9 shadow-xl shadow-primary/8 relative overflow-hidden animate-bounce-in">
         {/* Background decoration */}
-        <div className="absolute top-3 right-4 text-2xl opacity-20 rotate-12">🌸</div>
+        <div className="absolute top-3 right-4 text-2xl opacity-20 rotate-12">🍃</div>
         <div className="absolute bottom-4 left-4 text-xl opacity-15 -rotate-12">🍃</div>
 
         {/* Badges */}
